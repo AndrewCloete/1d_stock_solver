@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cutlist"
+version = "0.1.0"
+description = "1D cutting-stock optimiser for workbench BOM exports"
+requires-python = ">=3.11"
+dependencies = [
+    "ortools>=9.0",
+    "matplotlib>=3.7",
+]
+
+[project.scripts]
+cutlist = "cutlist.__main__:main"
+sweep   = "cutlist.sweep:main"

@@ -1,0 +1,15 @@
+# virtual environment
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# BOM inputs (exported fresh from Onshape each time)
+*.csv
+
+# generated outputs
+*.png
+*.pdf
+*.svg
