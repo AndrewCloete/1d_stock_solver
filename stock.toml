@@ -1,20 +1,45 @@
 # stock.toml — purchasable lengths and prices per material code.
 #
 # Material codes must match the Material column in your Onshape BOM export.
-# Prices can be any consistent unit (dollars, pence, cost-per-metre …).
-#
-# CONFIGURE THIS: replace the placeholder values with real stock and real prices.
+# Lengths in mm. Prices in whatever unit you want — just keep it consistent.
 
-[A]  # 70 × 50 PAR pine
+[38x38]
 options = [
-    { mm = 2400, price = 180.0 },
-    { mm = 3000, price = 220.0 },
-    { mm = 3600, price = 270.0 },
+    { mm = 3600, price =  40.00 },
+    { mm = 4800, price =  63.50 },
+    { mm = 6600, price =  83.00 },
+    { mm = 6000, price = 106.00 },
 ]
 
-[B]  # 150 × 50 PAR pine
+[38x76]
 options = [
-    { mm = 2400, price = 320.0 },
-    { mm = 3000, price = 395.0 },
-    { mm = 3600, price = 480.0 },
+    { mm = 6000, price = 140.00 },
+]
+
+[38x114]
+options = [
+    { mm = 3600, price = 115.50 },
+    { mm = 4800, price = 154.00 },
+    { mm = 6000, price = 241.80 },
+]
+
+[38x152]
+options = [
+    { mm = 6000, price = 358.10 },
+    { mm = 6600, price = 429.70 },
+]
+
+[50x76]
+options = [
+    { mm = 3000, price =  87.00 },
+    { mm = 3600, price = 174.50 },
+    { mm = 4200, price = 211.50 },
+    { mm = 4800, price = 210.00 },
+    { mm = 6000, price = 291.80 },
+]
+
+[50x228]
+options = [
+    { mm = 4800, price = 734.70 },
+    { mm = 6000, price = 981.95 },
 ]
