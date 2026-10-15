@@ -11,7 +11,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from cutlist import console, load_stock, print_shopping_list, read_bom, report, solve, write_csv
+from cutlist import console, load_stock, print_shopping_list, read_bom, read_frame_tsv, report, solve, write_csv
 
 DEFAULT_KERF = 3   # mm lost per cut
 DEFAULT_TRIM = 10  # mm docked off each bar end for squaring
@@ -39,6 +39,8 @@ def main() -> None:
                     help="also write the cutting layout to this CSV")
     ap.add_argument("--time-limit", type=float, default=30,
                     help="CP-SAT time limit in seconds (default 30)")
+    ap.add_argument("--frame", action="store_true",
+                    help="input is a TSV pasted from the Onshape frame cut list")
     args = ap.parse_args()
 
     try:
@@ -46,7 +48,9 @@ def main() -> None:
     except FileNotFoundError:
         sys.exit(f"stock file not found: {args.stock}")
 
-    pieces, skipped = read_bom(args.bom, args.length_col)
+    pieces, skipped = (
+        read_frame_tsv(args.bom) if args.frame else read_bom(args.bom, args.length_col)
+    )
 
     if skipped:
         print(

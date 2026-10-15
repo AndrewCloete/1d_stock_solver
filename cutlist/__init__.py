@@ -37,6 +37,45 @@ def load_stock(path: Path = Path("stock.toml")) -> dict[str, list[tuple[int, flo
     }
 
 
+def read_frame_tsv(path):
+    """Parse an Onshape frame cut list copied to clipboard (TSV).
+
+    Columns expected: Item, Qty, Description, Length
+    Length values like '1758 mm' are stripped to integers.
+
+    Returns (pieces, skipped) — same shape as read_bom.
+    """
+    pieces: dict[str, list[tuple[int, str]]] = defaultdict(list)
+    skipped: list[str] = []
+
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f, delimiter="\t"):
+            item = (row.get("Item") or "").strip()
+            material = (row.get("Description") or "").strip()
+            raw_len = (row.get("Length") or "").strip().removesuffix("mm").strip()
+
+            if not material or not raw_len:
+                skipped.append(item or "<unnamed>")
+                continue
+
+            try:
+                length = int(round(float(raw_len)))
+            except ValueError:
+                skipped.append(item)
+                continue
+
+            try:
+                qty = int(row.get("Qty") or 1)
+            except ValueError:
+                qty = 1
+
+            for n in range(qty):
+                label = f"Item {item}" if qty == 1 else f"Item {item} ({n + 1})"
+                pieces[material].append((length, label))
+
+    return dict(pieces), skipped
+
+
 def read_bom(path, length_col: str = "Title 2"):
     """Parse an Onshape BOM CSV.
 
