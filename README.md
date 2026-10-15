@@ -2,6 +2,23 @@
 
 ![Cutlist output](img/cutlist.svg)
 
+```toml
+# stock.toml — purchasable lengths and prices per material code
+[38x38]
+options = [
+    { mm = 3600, price =  40.00 },
+    { mm = 4800, price =  63.50 },
+    { mm = 6600, price =  83.00 },
+]
+
+[38x114]
+options = [
+    { mm = 3600, price = 115.50 },
+    { mm = 4800, price = 154.00 },
+    { mm = 6000, price = 241.80 },
+]
+```
+
 End-to-end loop for a parametric workbench design:
 
 1. Adjust dimensions in CAD
