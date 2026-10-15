@@ -6,8 +6,8 @@ __pycache__/
 *.pyc
 *.pyo
 
-# BOM inputs (exported fresh from Onshape each time)
-*.csv
+# BOM / cut list inputs (exported fresh from Onshape each time)
+cutlists/
 
 # generated outputs
 out/
