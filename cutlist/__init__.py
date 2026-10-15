@@ -19,7 +19,7 @@ from rich.rule import Rule
 from rich.table import Table
 from rich import box
 
-console = Console(highlight=False)
+console = Console(highlight=False, record=True)
 
 
 def load_stock(path: Path = Path("stock.toml")) -> dict[str, list[tuple[int, float]]]:

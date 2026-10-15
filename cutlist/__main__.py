@@ -78,6 +78,8 @@ def main() -> None:
 
     print_shopping_list(results, stock, grand_total)
 
+    console.save_svg("out/out.svg", title="Cutlist")
+
     if args.csv:
         write_csv(args.csv, results, args.kerf, args.trim)
         print(f"\nlayout written to {args.csv}")
