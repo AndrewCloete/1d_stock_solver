@@ -1,5 +1,7 @@
 # Workbench cutting-list optimiser
 
+![Cutlist output](img/cutlist.svg)
+
 End-to-end loop for a parametric workbench design:
 
 1. Adjust dimensions in CAD
