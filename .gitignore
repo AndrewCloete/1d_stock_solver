@@ -14,4 +14,4 @@ out/
 *.png
 *.pdf
 *.svg
-!img/*.svg
+!img/*

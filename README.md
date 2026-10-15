@@ -1,5 +1,7 @@
 # Workbench cutting-list optimiser
 
+[![Onshape model](img/tote_rack_example.png)](https://cad.onshape.com/documents/8608ce6f867f33ab569ca052/w/8a5d516d4df43a47e6b1b93d/e/4a74294b8823b9d80d560135)
+
 ![Cutlist output](img/cutlist.svg)
 
 ```toml
