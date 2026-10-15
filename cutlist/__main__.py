@@ -11,7 +11,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from cutlist import load_stock, read_bom, report, solve, write_csv
+from cutlist import console, load_stock, print_shopping_list, read_bom, report, solve, write_csv
 
 DEFAULT_KERF = 3   # mm lost per cut
 DEFAULT_TRIM = 10  # mm docked off each bar end for squaring
@@ -76,9 +76,7 @@ def main() -> None:
         grand_total += price
         report(material, bars, price, optimal, args.kerf, args.trim)
 
-    print(f"\n{'=' * 64}")
-    print(f"TOTAL {grand_total:.2f}")
-    print("=" * 64)
+    print_shopping_list(results, stock, grand_total)
 
     if args.csv:
         write_csv(args.csv, results, args.kerf, args.trim)

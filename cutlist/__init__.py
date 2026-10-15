@@ -14,6 +14,13 @@ import tomllib
 from collections import defaultdict
 from pathlib import Path
 
+from rich.console import Console
+from rich.rule import Rule
+from rich.table import Table
+from rich import box
+
+console = Console(highlight=False)
+
 
 def load_stock(path: Path = Path("stock.toml")) -> dict[str, list[tuple[int, float]]]:
     """Load the purchasable-stock table from a TOML file.
@@ -161,6 +168,21 @@ def solve(
     return total, bars, optimal
 
 
+def _fill_bar(consumed: int, bar_len: int, max_bar_len: int, max_width: int = 32) -> str:
+    total = max(1, round(bar_len / max_bar_len * max_width))
+    filled = round(consumed / bar_len * total)
+    return "█" * filled + "░" * (total - filled)
+
+
+def _offcut_style(offcut: int, bar_len: int) -> str:
+    pct = offcut / bar_len
+    if pct < 0.05:
+        return "green"
+    if pct < 0.15:
+        return "yellow"
+    return "red"
+
+
 def report(
     material: str,
     bars: list[tuple[int, list[tuple[int, str]]]],
@@ -171,27 +193,72 @@ def report(
 ) -> None:
     bought = sum(b[0] for b in bars)
     used = sum(p[0] for b in bars for p in b[1])
+    waste = bought - used
     count = len(bars)
 
-    print(f"\n{'=' * 64}")
-    print(
-        f"MATERIAL {material}   —   {count} bars, {bought / 1000:.2f} m, "
-        f"cost {price:.2f}" + ("" if optimal else "   [time limit hit]")
+    status = "[bold green]OPTIMAL[/]" if optimal else "[bold yellow]FEASIBLE[/]"
+    console.print()
+    console.print(Rule(f"[bold cyan]{material}[/]", style="cyan"))
+    console.print(
+        f"  [bold]{count}[/] bars  ·  [bold]{bought / 1000:.2f} m[/]  ·  "
+        f"cost [bold green]{price:.2f}[/]  ·  {status}  ·  "
+        f"waste [bold]{100 * waste / bought:.1f}%[/]"
     )
-    print("=" * 64)
+    console.print()
+
+    max_bar_len = max(b[0] for b in bars)
 
     for i, (bar_len, on_bar) in enumerate(bars, 1):
         consumed = sum(p[0] for p in on_bar) + kerf * len(on_bar) + trim
         offcut = bar_len - consumed
-        print(f"\n  Bar {i}:  {bar_len}mm        offcut {offcut}mm")
-        for length, name in on_bar:
-            print(f"      {length:>6}   {name}")
+        style = _offcut_style(offcut, bar_len)
+        fill = _fill_bar(consumed, bar_len, max_bar_len)
 
-    waste = bought - used
-    print(
-        f"\n  used {used / 1000:.2f} m of {bought / 1000:.2f} m  "
-        f"→ {100 * waste / bought:.1f}% waste"
+        console.print(
+            f"  [bold]Bar {i:<3}[/] [dim]{bar_len:,} mm[/]  "
+            f"[cyan]{fill}[/]  [{style}]{offcut:,} mm offcut[/]"
+        )
+        for length, name in on_bar:
+            console.print(f"    [dim]{length:>6,}[/]  {name}")
+        console.print()
+
+    console.print(
+        f"  [dim]used {used / 1000:.2f} m of {bought / 1000:.2f} m  "
+        f"→  {100 * waste / bought:.1f}% waste[/]\n"
     )
+
+
+def print_shopping_list(results: dict, stock: dict, grand_total: float) -> None:
+    prices = {mat: dict(opts) for mat, opts in stock.items()}
+
+    table = Table(box=box.SIMPLE_HEAVY, show_footer=True, padding=(0, 1))
+    table.add_column("Material", style="cyan bold")
+    table.add_column("Length", justify="right")
+    table.add_column("Qty", justify="right", style="bold")
+    table.add_column("Unit price", justify="right", style="dim")
+    table.add_column("Total", justify="right", footer=f"[bold green]{grand_total:.2f}[/]")
+
+    for material, (_, bars, _) in sorted(results.items()):
+        counts: dict[int, int] = {}
+        for bar_len, _ in bars:
+            counts[bar_len] = counts.get(bar_len, 0) + 1
+
+        first = True
+        for bar_len, qty in sorted(counts.items(), reverse=True):
+            unit = prices.get(material, {}).get(bar_len, 0.0)
+            total = unit * qty
+            table.add_row(
+                material if first else "",
+                f"{bar_len:,} mm",
+                str(qty),
+                f"{unit:.2f}",
+                f"{total:.2f}",
+            )
+            first = False
+
+    console.print()
+    console.print(Rule("[bold]Shopping list[/]", style="bold white"))
+    console.print(table)
 
 
 def write_csv(path, results: dict, kerf: int, trim: int) -> None:
